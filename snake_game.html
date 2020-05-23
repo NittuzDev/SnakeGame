@@ -3,40 +3,47 @@
 	
 		<script>
 		
-		cell_dim=20;
-		currentpos_x=currentpos_y=10;
-		xm=ym=0;
-		scale=20;
-		ax=ay=0;
-		set_random_target();
 		
-		snake=[];
-		tail=5;
+		cell_dim=20;  //cell dimension
+		currentpos_x=currentpos_y=10;  //current position
+		xm=ym=0; // movement variables
+		scale=20; //scale ratio
+		ax=ay=0; // target position
+		set_random_target(); //function for random target
+		
+		snake=[]; //snake array
+		tail=5; 
 		
 		running=false;
 		
-		levels=[1,2,3,4,5];
-		speeds=[200,150,100,80,50];
-		scores=[5,10,15,20,25];
+		levels=[1,2,3,4,5]; // array of levels
+		speeds=[200,150,100,80,50]; // array of speeds
+		scores=[5,10,15,20,25]; //array of scores during each level
 		total_score=0;
 		current_level=1;
 		
 		
 		window.onload=function()
 		{
+			//background setup
 			canvas=document.getElementById("game_field");
 			context=canvas.getContext("2d");
 			
+			//target setup
 			img=document.getElementById("image");
 			
+			// level span
 			level=document.getElementById("mylevel");
 			level.textContent="Level 1";
 			
+			//score span
 			score=document.getElementById("myscore");
 			score.textContent="Score "+total_score;
 			
+			// event on arrow key pressure
 			document.addEventListener("keydown",changes_direction);
 			
+			// interval for the game
 			progress=setInterval(game,speeds[current_level-1]);
 			
 			message.textContent="Press an arrow key to start the game";
@@ -44,6 +51,7 @@
 			place_grid();
 		}
 		
+		//maingamefunction
 		function game()
 		{
 			if(running)
@@ -54,6 +62,8 @@
 				currentpos_x+=xm;
 				currentpos_y+=ym;
 				
+				
+				// print the snake
 				context.fillStyle="blue";
 				
 				for(var i=0;i<snake.length;i++)
@@ -65,7 +75,7 @@
 					}
 				}
 				
-				
+				// add new snake piece
 				snake.push({x:currentpos_x,y:currentpos_y});
 				if(snake.length>tail)
 				{
@@ -74,11 +84,13 @@
 					
 				}
 				
+				// stop the game if crash
 				if(currentpos_x<0 || currentpos_x>scale-1 || currentpos_y<0 || currentpos_y>scale-1)
 				{
 					stopGame();
 				}
 				
+				//hit the target
 				if(ax==currentpos_x && ay==currentpos_y)
 				{
 					tail++;
@@ -94,10 +106,12 @@
 					set_random_target();
 				}
 				
+				//draw the target
 				context.drawImage(img, (ax*scale),(ay*scale), cell_dim-2, cell_dim-2);
 			}
 		}
 		
+		// increment the level
 		function next_level()
 		{
 			current_level++;
@@ -113,6 +127,7 @@
 			message.textContent="GAME OVER. Refresh the page to play again";
 		}
 		
+		// random function for the target position
 		function set_random_target()
 		{
 			ax=Math.floor(Math.random()*scale);
@@ -120,6 +135,7 @@
 		
 		}
 		
+		//function for direction changes
 		function changes_direction(e)
 		{
 			running=true;
@@ -142,6 +158,7 @@
 			}
 		}
 		
+		//function for the background
 		function place_grid()
 		{
 			for(var i=0;i<20;i++)
@@ -154,6 +171,7 @@
 			
 		}
 		
+		//reset a cell to the original background.
 		function reset_cell(i,j)
 		{
 			context.fillStyle="yellowgreen";
@@ -173,7 +191,10 @@
 	<span id="mylevel"></span><br/>
 	<span id="myscore"></span><br/>
 	
+	<!-- the hidden image is used as a source for draw it in the canvas -->
 	<image src="strawberry-icon.png" id="image" style="display:none;">
+	
+	<!-- game area-->
 	<canvas id='game_field' width=400 height=400 style='border:1px black solid'>
 	
 	</body>
