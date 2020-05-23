@@ -1,0 +1,180 @@
+<html>
+	<head>
+	
+		<script>
+		
+		cell_dim=20;
+		currentpos_x=currentpos_y=10;
+		xm=ym=0;
+		scale=20;
+		ax=ay=0;
+		set_random_target();
+		
+		snake=[];
+		tail=5;
+		
+		running=false;
+		
+		levels=[1,2,3,4,5];
+		speeds=[200,150,100,80,50];
+		scores=[5,10,15,20,25];
+		total_score=0;
+		current_level=1;
+		
+		
+		window.onload=function()
+		{
+			canvas=document.getElementById("game_field");
+			context=canvas.getContext("2d");
+			
+			img=document.getElementById("image");
+			
+			level=document.getElementById("mylevel");
+			level.textContent="Level 1";
+			
+			score=document.getElementById("myscore");
+			score.textContent="Score "+total_score;
+			
+			document.addEventListener("keydown",changes_direction);
+			
+			progress=setInterval(game,speeds[current_level-1]);
+			
+			message.textContent="Press an arrow key to start the game";
+			
+			place_grid();
+		}
+		
+		function game()
+		{
+			if(running)
+			{
+			
+				message.textContent="You are playing. Good luck";
+			
+				currentpos_x+=xm;
+				currentpos_y+=ym;
+				
+				context.fillStyle="blue";
+				
+				for(var i=0;i<snake.length;i++)
+				{	
+					context.fillRect(snake[i].x*scale,snake[i].y*scale,cell_dim-1,cell_dim-1);
+					if(snake[i].x==currentpos_x && snake[i].y==currentpos_y)
+					{
+						stopGame();
+					}
+				}
+				
+				
+				snake.push({x:currentpos_x,y:currentpos_y});
+				if(snake.length>tail)
+				{
+					reset_cell(snake[0].x,snake[0].y);
+					snake.shift();
+					
+				}
+				
+				if(currentpos_x<0 || currentpos_x>scale-1 || currentpos_y<0 || currentpos_y>scale-1)
+				{
+					stopGame();
+				}
+				
+				if(ax==currentpos_x && ay==currentpos_y)
+				{
+					tail++;
+					
+					if(tail==7 || tail==9 || tail==12 || tail==16)
+					{
+						next_level();
+					}
+					
+					total_score+=scores[current_level-1];
+					score.textContent="Score "+total_score;
+					
+					set_random_target();
+				}
+				
+				context.drawImage(img, (ax*scale),(ay*scale), cell_dim-2, cell_dim-2);
+			}
+		}
+		
+		function next_level()
+		{
+			current_level++;
+			level.textContent="Level "+current_level;
+			
+			clearInterval(progress);
+			progress=setInterval(game,speeds[current_level-1]);
+		}
+		
+		function stopGame()
+		{
+			clearInterval(progress);
+			message.textContent="GAME OVER. Refresh the page to play again";
+		}
+		
+		function set_random_target()
+		{
+			ax=Math.floor(Math.random()*scale);
+			ay=Math.floor(Math.random()*scale);
+		
+		}
+		
+		function changes_direction(e)
+		{
+			running=true;
+			
+			switch(e.code)
+			{
+				case "ArrowLeft":
+				xm=-1;ym=0; break;
+				
+				case "ArrowUp":
+				xm=0; ym=-1; break;
+				
+				case "ArrowRight":
+				xm=1; ym=0; break;
+				
+				case "ArrowDown":
+				xm=0;ym=1; break;
+				
+			
+			}
+		}
+		
+		function place_grid()
+		{
+			for(var i=0;i<20;i++)
+			{
+				for(var j=0;j<20;j++)
+				{
+					reset_cell(i,j);
+				}
+			}
+			
+		}
+		
+		function reset_cell(i,j)
+		{
+			context.fillStyle="yellowgreen";
+			context.fillRect(i*20,j*20,cell_dim-1,cell_dim-1);
+		}
+		</script>
+	
+	</head>
+	
+	<body>
+	<table width=400>
+		<tr>
+			<td id="message">
+			</td>
+		</tr>
+	</table>
+	<span id="mylevel"></span><br/>
+	<span id="myscore"></span><br/>
+	
+	<image src="strawberry-icon.png" id="image" style="display:none;">
+	<canvas id='game_field' width=400 height=400 style='border:1px black solid'>
+	
+	</body>
+</html>
